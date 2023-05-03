@@ -1,0 +1,242 @@
+openapi: 3.0.3
+info:
+  title: REST API Test Project - OpenAPI 3.0
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:5000
+paths:
+  /todo-list/{list_id}:
+    get:
+      tags:
+        - get entries
+      summary: rest get operation
+      description: Get all entries of the specified todo list
+      operationId: get
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            default: ""
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entryArray'
+        '404':
+          description: No list with the given id
+    delete:
+      tags:
+        - delete list
+      summary: rest delete operation
+      description: delete the todo list of the specified id
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            default: ""
+      responses:
+        '200':
+          description: Successfully deleted todo list
+        '404':
+          description: No list with the given id
+        '500':
+          description: Writing error
+    patch:
+      tags:
+        - update list name
+      summary: rest patch operation
+      description: update the name of a todo list
+      operationId: patch
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            default: ""
+      requestBody:
+        required: true
+        description: Todo list object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestList'
+      responses:
+        '200':
+          description: Successfully updated todo list name
+        '404':
+          description: No list with the given id
+        '500':
+          description: Writing error
+  /todo-list:
+    get:
+      tags:
+        - get all lists
+      summary: rest get operation
+      description: get list of all todo lists
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo_listArray'
+    post:
+      tags:
+        - add new list
+      summary: rest post operation
+      description: add new todo list
+      operationId: post
+      requestBody:
+        required: true
+        description: todo list object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestList'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo_list'
+        '500':
+          description: Writing error
+  /todo-list/{list_id}/entry:
+    post:
+      tags:
+        - add new entry
+      summary: rest post operation
+      description: add new entry to a todo list
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            default: ""
+      requestBody:
+        required: true
+        description: entry object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestEntry'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entry'
+        '404':
+          description: No list with the given id
+        '500':
+          description: Writing error
+  /entry/{entry_id}:
+    patch:
+      tags:
+        - update entry
+      summary: rest patch operation
+      description: update entry
+      operationId: patch
+      parameters:
+        - name: entry_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            default: ""
+      requestBody:
+        required: true
+        description: entry object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestEntry'
+      responses:
+        '200':
+          description: Successfully updated todo list name
+        '404':
+          description: No entry with the given id
+        '500':
+          description: Writing error
+    delete:
+      tags:
+        - delete entry
+      summary: rest delete operation
+      description: delete an entry
+      parameters:
+        - name: entry_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            default: ""
+      responses:
+        '200':
+          description: Successfully updated todo list name
+        '404':
+          description: No entry with the given id
+        '500':
+          description: Writing error
+
+components:
+  schemas:
+    todo_list:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    entry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        todo_list_id:
+          type: string
+          format: uuid
+    entryArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/entry'
+    todo_listArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/todo_list'
+    requestList:
+      type: object
+      properties:
+        name:
+          type: string
+    requestEntry:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
